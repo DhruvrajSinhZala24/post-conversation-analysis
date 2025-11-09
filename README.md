@@ -15,7 +15,7 @@ A Django REST Framework application that performs automated post-conversation an
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/post-conversation-analysis.git
+git clone https://github.com/DhruvrajSinhZala24/post-conversation-analysis.git
 cd post-conversation-analysis
 
 # Create virtual environment
