@@ -1,0 +1,61 @@
+{% extends 'analysis/base.html' %}
+
+{% block title %}Home - Post-Conversation Analysis{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h1>Welcome to Post-Conversation Analysis</h1>
+    <p class="subtitle">Analyze chat conversations between AI agents and users using advanced metrics</p>
+</div>
+
+<div class="features-grid">
+    <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>11 Analysis Parameters</h3>
+        <p>Comprehensive analysis including clarity, relevance, sentiment, empathy, and more</p>
+    </div>
+    <div class="feature-card">
+        <div class="feature-icon">🚀</div>
+        <h3>RESTful API</h3>
+        <p>Complete API endpoints for integration with any application</p>
+    </div>
+    <div class="feature-card">
+        <div class="feature-icon">⏰</div>
+        <h3>Automated Analysis</h3>
+        <p>Daily cron job automatically analyzes new conversations</p>
+    </div>
+    <div class="feature-card">
+        <div class="feature-icon">💾</div>
+        <h3>Database Integration</h3>
+        <p>SQLite and PostgreSQL support for reliable data storage</p>
+    </div>
+</div>
+
+<div class="quick-actions">
+    <h2>Quick Actions</h2>
+    <div class="action-buttons">
+        <a href="{% url 'create-conversation' %}" class="btn btn-primary">Create New Conversation</a>
+        <a href="{% url 'conversations' %}" class="btn btn-secondary">View All Conversations</a>
+        <a href="{% url 'reports' %}" class="btn btn-secondary">View Analysis Reports</a>
+    </div>
+</div>
+
+<div class="info-section">
+    <h2>How It Works</h2>
+    <ol class="steps-list">
+        <li>
+            <strong>Create Conversation:</strong> Upload a conversation with messages between user and AI
+        </li>
+        <li>
+            <strong>Analyze:</strong> The system analyzes the conversation using 11 quality metrics
+        </li>
+        <li>
+            <strong>View Results:</strong> Get detailed analysis including sentiment, clarity, resolution status, and more
+        </li>
+        <li>
+            <strong>Automated:</strong> New conversations are automatically analyzed daily at 12 AM
+        </li>
+    </ol>
+</div>
+{% endblock %}
+

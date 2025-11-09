@@ -1,0 +1,130 @@
+{% extends 'analysis/base.html' %}
+
+{% block title %}Conversation Details - Post-Conversation Analysis{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Conversation Details</h1>
+    <a href="{% url 'conversations' %}" class="btn btn-secondary">Back to List</a>
+</div>
+
+<div class="conversation-detail">
+    <div class="detail-section">
+        <h2>{{ conversation.title|default:"Untitled Conversation" }}</h2>
+        <p class="meta-info">Created: {{ conversation.created_at|date:"F d, Y H:i" }}</p>
+    </div>
+
+    <div class="messages-section">
+        <h3>Messages</h3>
+        <div class="messages-list">
+            {% for message in conversation.messages.all %}
+            <div class="message-item message-{{ message.sender }}">
+                <div class="message-header">
+                    <span class="message-sender">{{ message.sender|upper }}</span>
+                    <span class="message-time">{{ message.timestamp|date:"H:i" }}</span>
+                </div>
+                <div class="message-text">{{ message.text }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    {% if conversation.analysis %}
+    <div class="analysis-section">
+        <h3>Analysis Results</h3>
+        <div class="analysis-grid">
+            <div class="analysis-card">
+                <h4>Overall Score</h4>
+                <div class="score-large score-{% if conversation.analysis.overall_score >= 0.7 %}high{% elif conversation.analysis.overall_score >= 0.4 %}medium{% else %}low{% endif %}">
+                    {{ conversation.analysis.overall_score|floatformat:2 }}
+                </div>
+            </div>
+            <div class="analysis-card">
+                <h4>Sentiment</h4>
+                <div class="sentiment-large sentiment-{{ conversation.analysis.sentiment }}">
+                    {{ conversation.analysis.sentiment|title }}
+                </div>
+            </div>
+            <div class="analysis-card">
+                <h4>Resolution</h4>
+                <div class="resolution-status">
+                    {% if conversation.analysis.resolution %}
+                        <span class="badge badge-success">✓ Resolved</span>
+                    {% else %}
+                        <span class="badge badge-danger">✗ Not Resolved</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="analysis-card">
+                <h4>Escalation Need</h4>
+                <div>
+                    {% if conversation.analysis.escalation_need %}
+                        <span class="badge badge-warning">⚠ Needs Escalation</span>
+                    {% else %}
+                        <span class="badge badge-success">✓ No Escalation</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="metrics-section">
+            <h4>Detailed Metrics</h4>
+            <div class="metrics-grid">
+                <div class="metric-item">
+                    <span class="metric-label">Clarity Score</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: {{ conversation.analysis.clarity_score|floatformat:0 }}%"></div>
+                        <span class="progress-text">{{ conversation.analysis.clarity_score|floatformat:2 }}</span>
+                    </div>
+                </div>
+                <div class="metric-item">
+                    <span class="metric-label">Relevance Score</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: {{ conversation.analysis.relevance_score|floatformat:0 }}%"></div>
+                        <span class="progress-text">{{ conversation.analysis.relevance_score|floatformat:2 }}</span>
+                    </div>
+                </div>
+                <div class="metric-item">
+                    <span class="metric-label">Accuracy Score</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: {{ conversation.analysis.accuracy_score|floatformat:0 }}%"></div>
+                        <span class="progress-text">{{ conversation.analysis.accuracy_score|floatformat:2 }}</span>
+                    </div>
+                </div>
+                <div class="metric-item">
+                    <span class="metric-label">Completeness Score</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: {{ conversation.analysis.completeness_score|floatformat:0 }}%"></div>
+                        <span class="progress-text">{{ conversation.analysis.completeness_score|floatformat:2 }}</span>
+                    </div>
+                </div>
+                <div class="metric-item">
+                    <span class="metric-label">Empathy Score</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: {{ conversation.analysis.empathy_score|floatformat:0 }}%"></div>
+                        <span class="progress-text">{{ conversation.analysis.empathy_score|floatformat:2 }}</span>
+                    </div>
+                </div>
+                <div class="metric-item">
+                    <span class="metric-label">Response Time</span>
+                    <span class="metric-value">{{ conversation.analysis.response_time_avg|floatformat:1 }}s</span>
+                </div>
+                <div class="metric-item">
+                    <span class="metric-label">Fallback Frequency</span>
+                    <span class="metric-value">{{ conversation.analysis.fallback_frequency }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="no-analysis">
+        <p>This conversation hasn't been analyzed yet.</p>
+        <form method="post" action="{% url 'analyze-conversation' conversation.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">Analyze Now</button>
+        </form>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+

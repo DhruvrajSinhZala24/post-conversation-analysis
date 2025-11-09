@@ -1,0 +1,107 @@
+{% extends 'analysis/base.html' %}
+
+{% block title %}Analysis Reports - Post-Conversation Analysis{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Analysis Reports</h1>
+    <p>View all conversation analysis results</p>
+</div>
+
+{% if reports %}
+<div class="reports-table-container">
+    <table class="reports-table">
+        <thead>
+            <tr>
+                <th>Conversation ID</th>
+                <th>Overall Score</th>
+                <th>Sentiment</th>
+                <th>Resolution</th>
+                <th>Clarity</th>
+                <th>Relevance</th>
+                <th>Empathy</th>
+                <th>Escalation</th>
+                <th>Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for report in reports %}
+            <tr>
+                <td>#{{ report.conversation.id }}</td>
+                <td>
+                    <span class="score score-{% if report.overall_score >= 0.7 %}high{% elif report.overall_score >= 0.4 %}medium{% else %}low{% endif %}">
+                        {{ report.overall_score|floatformat:2 }}
+                    </span>
+                </td>
+                <td>
+                    <span class="sentiment sentiment-{{ report.sentiment }}">
+                        {{ report.sentiment|title }}
+                    </span>
+                </td>
+                <td>
+                    {% if report.resolution %}
+                        <span class="badge badge-success">✓</span>
+                    {% else %}
+                        <span class="badge badge-danger">✗</span>
+                    {% endif %}
+                </td>
+                <td>{{ report.clarity_score|floatformat:2 }}</td>
+                <td>{{ report.relevance_score|floatformat:2 }}</td>
+                <td>{{ report.empathy_score|floatformat:2 }}</td>
+                <td>
+                    {% if report.escalation_need %}
+                        <span class="badge badge-warning">⚠</span>
+                    {% else %}
+                        <span class="badge badge-success">✓</span>
+                    {% endif %}
+                </td>
+                <td>{{ report.created_at|date:"M d, Y" }}</td>
+                <td>
+                    <a href="{% url 'conversation-detail' report.conversation.id %}" class="btn btn-sm btn-primary">View</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="stats-summary">
+    <h3>Summary Statistics</h3>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-value">{{ reports|length }}</div>
+            <div class="stat-label">Total Reports</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">
+                {% with resolved=0 %}
+                    {% for report in reports %}
+                        {% if report.resolution %}{{ resolved|add:1 }}{% endif %}
+                    {% endfor %}
+                {% endwith %}
+                {{ reports|length }}
+            </div>
+            <div class="stat-label">Reports Analyzed</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">
+                {% if reports %}
+                    {% for report in reports %}
+                        {% if forloop.first %}{{ report.overall_score|floatformat:2 }}{% endif %}
+                    {% endfor %}
+                {% else %}
+                    0.00
+                {% endif %}
+            </div>
+            <div class="stat-label">Avg Overall Score</div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="empty-state">
+    <p>No analysis reports yet. <a href="{% url 'create-conversation' %}">Create a conversation</a> and analyze it to see reports here.</p>
+</div>
+{% endif %}
+{% endblock %}
+

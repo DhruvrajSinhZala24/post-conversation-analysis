@@ -1,0 +1,68 @@
+{% extends 'analysis/base.html' %}
+
+{% block title %}Conversations - Post-Conversation Analysis{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>All Conversations</h1>
+    <a href="{% url 'create-conversation' %}" class="btn btn-primary">Create New</a>
+</div>
+
+{% if conversations %}
+<div class="conversations-list">
+    {% for conversation in conversations %}
+    <div class="conversation-card">
+        <div class="conversation-header">
+            <h3>{{ conversation.title|default:"Untitled Conversation" }}</h3>
+            <div class="conversation-meta">
+                <span class="badge {% if conversation.analyzed %}badge-success{% else %}badge-warning{% endif %}">
+                    {% if conversation.analyzed %}Analyzed{% else %}Not Analyzed{% endif %}
+                </span>
+                <span class="date">{{ conversation.created_at|date:"M d, Y H:i" }}</span>
+            </div>
+        </div>
+        
+        <div class="conversation-info">
+            <p><strong>Messages:</strong> {{ conversation.messages.count }}</p>
+            {% if conversation.analysis %}
+            <div class="analysis-summary">
+                <p><strong>Overall Score:</strong> 
+                    <span class="score score-{% if conversation.analysis.overall_score >= 0.7 %}high{% elif conversation.analysis.overall_score >= 0.4 %}medium{% else %}low{% endif %}">
+                        {{ conversation.analysis.overall_score|floatformat:2 }}
+                    </span>
+                </p>
+                <p><strong>Sentiment:</strong> 
+                    <span class="sentiment sentiment-{{ conversation.analysis.sentiment }}">
+                        {{ conversation.analysis.sentiment|title }}
+                    </span>
+                </p>
+                <p><strong>Resolution:</strong> 
+                    {% if conversation.analysis.resolution %}
+                        <span class="badge badge-success">Resolved</span>
+                    {% else %}
+                        <span class="badge badge-danger">Not Resolved</span>
+                    {% endif %}
+                </p>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="conversation-actions">
+            <a href="{% url 'conversation-detail' conversation.id %}" class="btn btn-sm btn-primary">View Details</a>
+            {% if not conversation.analyzed %}
+            <form method="post" action="{% url 'analyze-conversation' conversation.id %}" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-success">Analyze Now</button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <p>No conversations yet. <a href="{% url 'create-conversation' %}">Create your first conversation</a></p>
+</div>
+{% endif %}
+{% endblock %}
+

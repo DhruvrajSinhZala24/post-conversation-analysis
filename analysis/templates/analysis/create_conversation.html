@@ -1,0 +1,82 @@
+{% extends 'analysis/base.html' %}
+
+{% block title %}Create Conversation - Post-Conversation Analysis{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Create New Conversation</h1>
+    <p>Upload a conversation to analyze. You can either paste JSON or upload a file.</p>
+</div>
+
+<div class="form-container">
+    <form method="post" id="conversationForm" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="title">Conversation Title (Optional)</label>
+            <input type="text" id="title" name="title" class="form-control" placeholder="e.g., Customer Support Chat">
+        </div>
+
+        <div class="form-group">
+            <label>Choose Input Method</label>
+            <div class="radio-group">
+                <label class="radio-label">
+                    <input type="radio" name="input_method" value="json" checked onchange="toggleInputMethod()">
+                    Paste JSON
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="input_method" value="file" onchange="toggleInputMethod()">
+                    Upload File
+                </label>
+            </div>
+        </div>
+
+        <div id="jsonInput" class="input-section">
+            <div class="form-group">
+                <label for="json_data">Conversation JSON</label>
+                <textarea id="json_data" name="json_data" class="form-control" rows="10" placeholder='[
+  {"sender": "user", "message": "Hi, I need help with my order."},
+  {"sender": "ai", "message": "Sure, can you please share your order ID?"},
+  {"sender": "user", "message": "It'\''s 12345."},
+  {"sender": "ai", "message": "Thanks! Your order has been shipped and will arrive tomorrow."}
+]'></textarea>
+                <small class="form-text">Enter conversation in JSON format</small>
+            </div>
+        </div>
+
+        <div id="fileInput" class="input-section" style="display: none;">
+            <div class="form-group">
+                <label for="file">Upload JSON File</label>
+                <input type="file" id="file" name="file" class="form-control" accept=".json">
+                <small class="form-text">Select a JSON file containing conversation data</small>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Create & Analyze</button>
+            <a href="{% url 'home' %}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<script>
+function toggleInputMethod() {
+    const jsonInput = document.getElementById('jsonInput');
+    const fileInput = document.getElementById('fileInput');
+    const jsonRadio = document.querySelector('input[value="json"]');
+    
+    if (jsonRadio.checked) {
+        jsonInput.style.display = 'block';
+        fileInput.style.display = 'none';
+        document.getElementById('file').required = false;
+        document.getElementById('json_data').required = true;
+    } else {
+        jsonInput.style.display = 'none';
+        fileInput.style.display = 'block';
+        document.getElementById('json_data').required = false;
+        document.getElementById('file').required = true;
+    }
+}
+</script>
+{% endblock %}
+
